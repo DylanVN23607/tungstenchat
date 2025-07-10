@@ -1,6 +1,7 @@
 const express = require('express')
 const multer = require('multer')
 const admin = require('firebase-admin')
+const path = require('path') // ← added this
 
 const app = express()
 const PORT = process.env.PORT || 8080
@@ -11,6 +12,10 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 })
 const db = admin.firestore()
+
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+app.use('/', express.static(path.join(__dirname, 'public'))) // ← serve static HTML
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
