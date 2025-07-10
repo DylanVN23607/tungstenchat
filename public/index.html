@@ -404,7 +404,7 @@
     let lastChatData = null
     document.getElementById('from').value = localStorage.getItem("username") || "";
     document.getElementById('saveuserbtn').addEventListener('click', ()=>{
-      localStorage.setItem('username', document.getElementById('saveuserbtn').value);
+      localStorage.setItem('username', document.getElementById('from').value);
     })
     function getFrom() {
       return document.getElementById('from').value || 'anonymous'
