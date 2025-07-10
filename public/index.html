@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tungsten Chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: #303030;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid #404040;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #e0e0e0, #a0a0a0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header a {
+      color: #8fa8b2;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .header a:hover {
+      color: #b8d4de;
+    }
+
+    .user-section {
+      background: #303030;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #404040;
+    }
+
+    .user-section label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #b0b0b0;
+    }
+
+    .user-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #252525;
+      border: 2px solid #404040;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 14px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .user-input:focus {
+      outline: none;
+      border-color: #5a5a5a;
+      box-shadow: 0 0 0 3px rgba(96, 96, 96, 0.2);
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 400px;
+    }
+
+    #chat {
+      background: #303030;
+      border: 1px solid #404040;
+      border-radius: 12px;
+      padding: 20px;
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+      flex: 1;
+    }
+
+    #chat::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #chat::-webkit-scrollbar-track {
+      background: #2a2a2a;
+      border-radius: 4px;
+    }
+
+    #chat::-webkit-scrollbar-thumb {
+      background: #505050;
+      border-radius: 4px;
+    }
+
+    #chat::-webkit-scrollbar-thumb:hover {
+      background: #606060;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      padding: 12px 16px;
+      background: #2a2a2a;
+      border-radius: 8px;
+      border-left: 3px solid #5a5a5a;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .message .username {
+      font-weight: 700;
+      color: #9bb5c4;
+      margin-bottom: 5px;
+    }
+
+    .message .content {
+      color: #d0d0d0;
+      line-height: 1.4;
+    }
+
+    .message img {
+      max-width: 300px;
+      max-height: 200px;
+      border-radius: 6px;
+      margin-top: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+    }
+
+    .message video {
+      max-width: 400px;
+      max-height: 300px;
+      border-radius: 6px;
+      margin-top: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .message audio {
+      width: 100%;
+      max-width: 400px;
+      margin-top: 8px;
+      border-radius: 6px;
+    }
+
+    .file-embed {
+      background: #1a1a1a;
+      border: 1px solid #404040;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 8px;
+      max-width: 400px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.3s ease;
+    }
+
+    .file-embed:hover {
+      background: #222222;
+    }
+
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      background: #4a4a4a;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #e0e0e0;
+    }
+
+    .file-info {
+      flex: 1;
+    }
+
+    .file-name {
+      font-weight: 600;
+      color: #e0e0e0;
+      margin-bottom: 4px;
+    }
+
+    .file-size {
+      font-size: 12px;
+      color: #a0a0a0;
+    }
+
+    .file-download {
+      background: #404040;
+      color: #e0e0e0;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.3s ease;
+    }
+
+    .file-download:hover {
+      background: #505050;
+    }
+
+    .input-section {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .text-form, .file-form {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .message-input {
+      flex: 1;
+      padding: 14px 18px;
+      background: #252525;
+      border: 2px solid #404040;
+      border-radius: 25px;
+      color: #e0e0e0;
+      font-size: 15px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .message-input:focus {
+      outline: none;
+      border-color: #5a5a5a;
+      box-shadow: 0 0 0 3px rgba(96, 96, 96, 0.2);
+    }
+
+    .file-input {
+      padding: 12px 16px;
+      background: #252525;
+      border: 2px solid #404040;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+
+    .file-input:hover {
+      border-color: #5a5a5a;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #404040 0%, #505050 100%);
+      border: none;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #505050 0%, #606060 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4a4a4a 0%, #5a5a5a 100%);
+      border-radius: 25px;
+      padding: 14px 28px;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5a5a5a 0%, #6a6a6a 100%);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #5a2d2d 0%, #6a3333 100%);
+      margin-top: 10px;
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #6a3333 0%, #7a3939 100%);
+    }
+
+    .admin-section {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #404040;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .text-form, .file-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .message-input {
+        border-radius: 6px;
+      }
+      
+      .btn-primary {
+        border-radius: 6px;
+      }
+
+      .message img,
+      .message video {
+        max-width: 100%;
+      }
+
+      .file-embed {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Tungsten Chat</h1>
+      <a href="/" id="hosthref">localhost:8080</a>
+    </div>
+
+    <div class="user-section">
+      <label for="from">Usuario:</label>
+      <input type="text" id="from" class="user-input" placeholder="Ingresa tu usuario" />
+    </div>
+
+    <div class="chat-container">
+      <div id="chat"></div>
+      
+      <div class="input-section">
+        <form id="textForm" class="text-form">
+          <input type="text" id="message" class="message-input" placeholder="Escribe tu mensaje..." />
+          <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+
+        <form id="fileForm" class="file-form" enctype="multipart/form-data" method="POST">
+          <input type="file" name="file" class="file-input" />
+          <button type="submit" class="btn">Enviar Archivo</button>
+        </form>
+
+        <div class="admin-section">
+          <button id="clearBtn" class="btn btn-danger">Borrar Chat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let lastChatData = null
+
+    function getFrom() {
+      return document.getElementById('from').value || 'anonymous'
+    }
+
+    function getFileIcon(fileName) {
+      const ext = fileName.split('.').pop().toLowerCase()
+      
+      // File type icons
+      const icons = {
+        // Images
+        'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️', 'webp': '🖼️', 'svg': '🖼️',
+        // Videos
+        'mp4': '🎬', 'avi': '🎬', 'mov': '🎬', 'mkv': '🎬', 'webm': '🎬', 'flv': '🎬',
+        // Audio
+        'mp3': '🎵', 'wav': '🎵', 'ogg': '🎵', 'flac': '🎵', 'aac': '🎵', 'm4a': '🎵',
+        // Documents
+        'pdf': '📄', 'doc': '📄', 'docx': '📄', 'txt': '📄', 'rtf': '📄',
+        'xls': '📊', 'xlsx': '📊', 'csv': '📊',
+        'ppt': '📊', 'pptx': '📊',
+        // Archives
+        'zip': '📦', 'rar': '📦', '7z': '📦', 'tar': '📦', 'gz': '📦',
+        // Code
+        'js': '💻', 'html': '💻', 'css': '💻', 'php': '💻', 'py': '💻', 'java': '💻',
+        'cpp': '💻', 'c': '💻', 'cs': '💻', 'go': '💻', 'rust': '💻', 'lua': '💻',
+        // Default
+        'default': '📁'
+      }
+      
+      return icons[ext] || icons['default']
+    }
+
+    function isImageFile(fileName) {
+      const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico']
+      const ext = fileName.split('.').pop().toLowerCase()
+      return imageExts.includes(ext)
+    }
+
+    function isVideoFile(fileName) {
+      const videoExts = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv', 'ogv']
+      const ext = fileName.split('.').pop().toLowerCase()
+      return videoExts.includes(ext)
+    }
+
+    function isAudioFile(fileName) {
+      const audioExts = ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a', 'wma']
+      const ext = fileName.split('.').pop().toLowerCase()
+      return audioExts.includes(ext)
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes'
+      const k = 1024
+      const sizes = ['Bytes', 'KB', 'MB', 'GB']
+      const i = Math.floor(Math.log(bytes) / Math.log(k))
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+    }
+
+    function renderFileContent(msg) {
+      const fileName = msg.fileName || 'archivo'
+      const fileSize = msg.fileSize || 0
+      const fileUrl = msg.content
+
+      if (isImageFile(fileName)) {
+        return `<img src="${fileUrl}" alt="${fileName}" onclick="window.open('${fileUrl}', '_blank')" />`
+      } else if (isVideoFile(fileName)) {
+        return `<video controls preload="metadata">
+          <source src="${fileUrl}" type="video/${fileName.split('.').pop().toLowerCase()}">
+          Tu navegador no soporta la reproducción de video.
+        </video>`
+      } else if (isAudioFile(fileName)) {
+        return `<audio controls preload="metadata">
+          <source src="${fileUrl}" type="audio/${fileName.split('.').pop().toLowerCase()}">
+          Tu navegador no soporta la reproducción de audio.
+        </audio>`
+      } else {
+        return `<div class="file-embed">
+          <div class="file-icon">${getFileIcon(fileName)}</div>
+          <div class="file-info">
+            <div class="file-name">${fileName}</div>
+            <div class="file-size">${formatFileSize(fileSize)}</div>
+          </div>
+          <button class="file-download" onclick="window.open('${fileUrl}', '_blank')">
+            Descargar
+          </button>
+        </div>`
+      }
+    }
+
+    function loadChat() {
+      fetch('/chat')
+        .then(res => res.json())
+        .then(data => {
+          // Compare with last data to avoid unnecessary DOM updates
+          const currentDataString = JSON.stringify(data)
+          if (lastChatData === currentDataString) {
+            return // No changes, skip update
+          }
+          
+          lastChatData = currentDataString
+          const chat = document.getElementById('chat')
+          const shouldScrollToBottom = chat.scrollTop + chat.clientHeight >= chat.scrollHeight - 10
+          
+          chat.innerHTML = ''
+          data.forEach(msg => {
+            const messageDiv = document.createElement('div')
+            messageDiv.className = 'message'
+            
+            if (msg.type === 'text') {
+              messageDiv.innerHTML = `
+                <div class="username">${msg.from}:</div>
+                <div class="content">${msg.content}</div>
+              `
+            } else if (msg.type === 'file') {
+              messageDiv.innerHTML = `
+                <div class="username">${msg.from}:</div>
+                <div class="content">${renderFileContent(msg)}</div>
+              `
+            }
+            
+            chat.appendChild(messageDiv)
+          })
+          
+          // Only auto-scroll if user was already at bottom
+          if (shouldScrollToBottom) {
+            chat.scrollTop = chat.scrollHeight
+          }
+        })
+        .catch(err => console.error('Error loading chat:', err))
+    }
+    document.getElementById("hosthref").textContent = window.location.host.toString()
+    document.getElementById('textForm').addEventListener('submit', (e) => {
+      e.preventDefault()
+      const messageInput = document.getElementById('message')
+      const message = messageInput.value.trim()
+      
+      if (!message) return
+      
+      fetch('/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: getFrom(),
+          message: message
+        })
+      }).then(() => {
+        messageInput.value = ''
+        loadChat()
+      }).catch(err => console.error('Error sending message:', err))
+    })
+
+    document.getElementById('fileForm').addEventListener('submit', function(e) {
+      e.preventDefault()
+      
+      const formData = new FormData()
+      const fileInput = this.querySelector('input[type="file"]')
+      const file = fileInput.files[0]
+      
+      if (!file) {
+        alert('Por favor selecciona un archivo')
+        return
+      }
+      
+      formData.append('file', file)
+      formData.append('from', getFrom())
+      formData.append('fileName', file.name)
+      formData.append('fileSize', file.size)
+      
+      // Show loading state
+      const submitBtn = this.querySelector('button[type="submit"]')
+      const originalText = submitBtn.textContent
+      submitBtn.textContent = 'Enviando...'
+      submitBtn.disabled = true
+      
+      fetch('/send-file', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          fileInput.value = '' // Clear file input
+          loadChat() // Refresh chat
+        } else {
+          alert('Error al enviar el archivo')
+        }
+      })
+      .catch(err => {
+        console.error('Error sending file:', err)
+        alert('Error al enviar el archivo')
+      })
+      .finally(() => {
+        submitBtn.textContent = originalText
+        submitBtn.disabled = false
+      })
+    })
+
+    // Clear database functionality
+    document.getElementById('clearBtn').addEventListener('click', function() {
+      const password = prompt('Ingresa la contraseña para borrar el chat:')
+      const btn = this
+      const originalText = "Borrar chat"
+
+      if (password !== 'realiristCool#23') {
+        btn.textContent = "Contraseña incorrecta"
+        setTimeout(()=>{btn.textContent = originalText}, 1000)
+        return
+      }
+      btn.textContent = 'Borrando...'
+      btn.disabled = true
+      
+      fetch('/clear-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          password: password,
+          resetMessage: {
+            from: 'dylan',
+            message: 'klk manito',
+            type: 'text'
+          }
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          lastChatData = null // Force refresh
+          loadChat()
+        } else {
+          console.error('Error al borrar el chat')
+        }
+      })
+      .catch(err => {
+        console.error('Error clearing chat:', err)
+        console.error('Error borrando el chat')
+      })
+      .finally(() => {
+        btn.textContent = originalText
+        btn.disabled = false
+      })
+    })
+
+    // Load chat on page load
+    loadChat()
+    
+    // Auto-refresh chat every second
+    setInterval(loadChat, 1000)
+    
+    // Focus on message input when page loads
+    document.getElementById('message').focus()
+  </script>
+</body>
+</html>
