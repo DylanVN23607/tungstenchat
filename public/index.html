@@ -376,6 +376,7 @@
     <div class="user-section">
       <label for="from">Usuario:</label>
       <input type="text" id="from" class="user-input" placeholder="Ingresa tu usuario" />
+      <button id="saveuserbtn" class="btn">Guardar usuario</button>
     </div>
 
     <div class="chat-container">
@@ -401,7 +402,10 @@
 
   <script>
     let lastChatData = null
-
+    document.getElementById('from').value = localStorage.getItem("username") || "";
+    document.getElementById('saveuserbtn').addEventListener('click', ()=>{
+      localStorage.setItem('username', document.getElementById('saveuserbtn'));
+    })
     function getFrom() {
       return document.getElementById('from').value || 'anonymous'
     }
