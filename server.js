@@ -83,7 +83,7 @@ app.post('/send-file', upload.single('file'), async (req, res) => {
     })
     res.sendStatus(200)
   } catch (e) {
-    res.status(500).send('Error uploading file')
+    res.status(500).send(`Error uploading file: ${e}`)
   }
 })
 
